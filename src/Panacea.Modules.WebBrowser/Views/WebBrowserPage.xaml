@@ -1,0 +1,111 @@
+﻿<UserControl
+    x:Class="Panacea.Modules.WebBrowser.Views.WebBrowserPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Panacea.Modules.WebBrowser.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Panacea.Modules.WebBrowser.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pcontrols="clr-namespace:Panacea.Controls;assembly=Panacea.Controls"
+    d:DesignHeight="550"
+    d:DesignWidth="2100"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Panacea.Controls;component/Styles/Default.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid Background="#e5e5e5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="18*" />
+                <RowDefinition Height=".5*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="1" Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="7*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <UniformGrid Margin="20,0,0,0" Rows="1">
+                    <Button
+                        Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
+                        HorizontalAlignment="Center"
+                        pcontrols:Material.Icon="keyboard_arrow_left"
+                        Command="{Binding ElementName=Main, Path=BackCommand}"
+                        Foreground="#222" />
+                    <Button
+                        Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
+                        HorizontalAlignment="Center"
+                        pcontrols:Material.Icon="keyboard_arrow_right"
+                        Command="{Binding ElementName=Main, Path=ForwardCommand}"
+                        Foreground="#222" />
+                    <Button
+                        Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
+                        HorizontalAlignment="Center"
+                        pcontrols:Material.Icon="home"
+                        Command="{Binding ElementName=Main, Path=GoHomeCommand}"
+                        Foreground="#222" />
+                </UniformGrid>
+
+
+                <controls:AutoCompleteBox
+                    x:Name="AutoCompleteTxt"
+                    Grid.Column="1"
+                    Padding="7"
+                    VerticalAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    FontSize="{DynamicResource FontSize-Large}"
+                    InvalidCertificate="{Binding ElementName=Main, Path=HasInvalidCertificate}"
+                    Text="{Binding ElementName=Main, Path=Url, Mode=TwoWay}" />
+                
+                <UniformGrid Grid.Column="2" Rows="1">
+                    <Button
+                        Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
+                        pcontrols:Material.Icon="keyboard_arrow_right"
+                        Command="{Binding ElementName=Main, Path=NavigateCommand}"
+                        CommandParameter="{Binding ElementName=AutoCompleteTxt, Path=InternalText}"
+                        Foreground="#222" />
+
+
+                    <Grid>
+                        <Button Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}" 
+                                Command="{Binding ElementName=Main, Path=OpenTabsCommand}"
+                                pcontrols:Material.Icon="tab"
+                                Foreground="#222"/>
+
+                        <Border
+                            Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                            Margin="0,0,1,1"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Background="#F44336"
+                            CornerRadius="100">
+
+                            <TextBlock
+                                Margin="-1,-2,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                pcontrols:Material.RelativeFontSizeRatio="0.6"
+                                FontWeight="Bold"
+                                Foreground="White"
+                                LineHeight="{Binding RelativeSource={RelativeSource Self}, Path=FontSize}"
+                                Text="{Binding ElementName=Main, Path=TabCount}" />
+                        </Border>
+                    </Grid>
+
+                </UniformGrid>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</UserControl>

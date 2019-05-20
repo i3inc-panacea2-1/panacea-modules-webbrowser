@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28902.138
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Panacea.Modules.WebBrowser", "Panacea.Modules.WebBrowser\Panacea.Modules.WebBrowser.csproj", "{94DCD84F-488F-4E38-8935-815D3A64BD38}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{94DCD84F-488F-4E38-8935-815D3A64BD38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94DCD84F-488F-4E38-8935-815D3A64BD38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94DCD84F-488F-4E38-8935-815D3A64BD38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94DCD84F-488F-4E38-8935-815D3A64BD38}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4157CD5B-3E97-4CB5-9EAE-2CC1BBB88294}
+	EndGlobalSection
+EndGlobal
