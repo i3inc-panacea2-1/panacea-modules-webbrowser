@@ -11,7 +11,7 @@
                     <ControlTemplate.Resources />
                     <Border
                         VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                        Background="#44ffffff"
+                        Background="#88ffffff"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         Focusable="True">
@@ -54,7 +54,7 @@
                                         VerticalAlignment="Center"
                                         Background="{Binding RelativeSource={RelativeSource AncestorType=webbrowser:AutoCompleteBox}, Path=HttpsBackground}"
                                         BorderBrush="{Binding RelativeSource={RelativeSource AncestorType=webbrowser:AutoCompleteBox}, Path=HttpsBorderBackground}"
-                                        BorderThickness="1"
+                                        BorderThickness="0"
                                         Visibility="{Binding RelativeSource={RelativeSource AncestorType=webbrowser:AutoCompleteBox}, Path=HttpsVisibility}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>

@@ -83,6 +83,23 @@ namespace Panacea.Modules.WebBrowser.ViewModels
 
                 Keyboard.ClearFocus();
             });
+
+            BackCommand = new RelayCommand(args =>
+            {
+                CurrentWebView?.GoBack();
+            },
+            args =>
+            {
+                return CurrentWebView?.CanGoBack == true;
+            });
+            ForwardCommand = new RelayCommand(args =>
+            {
+                CurrentWebView?.GoForward();
+            },
+            args =>
+            {
+                return CurrentWebView?.CanGoForward == true;
+            });
         }
 
         void CreateTab()
@@ -90,7 +107,7 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             var view = _webViewManager.CreateTab();
             Tabs.Add(view);
             SwitchToTab(view);
-            
+
         }
 
         void SwitchToTab(IWebView webView)
@@ -102,11 +119,23 @@ namespace Panacea.Modules.WebBrowser.ViewModels
         void AttachToWebView(IWebView webview)
         {
             webview.HasInvalidCertificateChanged += Webview_HasInvalidCertificateChanged;
+            webview.CanGoBackChanged += Webview_CanGoBackChanged;
+            webview.CanGoForwardChanged += Webview_CanGoForwardChanged;
+        }
+
+        private void Webview_CanGoForwardChanged(object sender, bool e)
+        {
+            ForwardCommand.RaiseCanExecuteChanged();
+        }
+
+        private void Webview_CanGoBackChanged(object sender, bool e)
+        {
+            BackCommand.RaiseCanExecuteChanged();
         }
 
         private void Webview_HasInvalidCertificateChanged(object sender, bool e)
         {
-            if(CurrentWebView == sender)
+            if (CurrentWebView == sender)
             {
                 HasInvalidCertificate = e;
             }
@@ -132,5 +161,9 @@ namespace Panacea.Modules.WebBrowser.ViewModels
         }
 
         public RelayCommand NavigateCommand { get; }
+
+        public RelayCommand BackCommand { get; }
+
+        public RelayCommand ForwardCommand { get; }
     }
 }

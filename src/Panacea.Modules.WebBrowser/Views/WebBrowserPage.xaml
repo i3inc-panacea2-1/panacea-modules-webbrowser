@@ -41,13 +41,13 @@
                         Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
                         HorizontalAlignment="Center"
                         pcontrols:Material.Icon="keyboard_arrow_left"
-                        Command="{Binding ElementName=Main, Path=BackCommand}"
+                        Command="{Binding BackCommand}"
                         Foreground="#222" />
                     <Button
                         Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
                         HorizontalAlignment="Center"
                         pcontrols:Material.Icon="keyboard_arrow_right"
-                        Command="{Binding ElementName=Main, Path=ForwardCommand}"
+                        Command="{Binding ForwardCommand}"
                         Foreground="#222" />
                     <Button
                         Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
@@ -96,14 +96,14 @@
                             CornerRadius="100">
 
                             <TextBlock
-                                Margin="-1,-2,0,0"
+                                Margin="1"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 pcontrols:Material.RelativeFontSizeRatio="0.8"
                                 FontWeight="Bold"
                                 Foreground="White"
                                 LineHeight="{Binding RelativeSource={RelativeSource Self}, Path=FontSize}"
-                                Text="{Binding Path=TabCount}" />
+                                Text="{Binding Tabs.Count}" />
                         </Border>
                     </Grid>
 

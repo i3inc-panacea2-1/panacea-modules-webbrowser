@@ -200,7 +200,7 @@ namespace Panacea.Modules.WebBrowser.Controls
             {
                 if (richtxt == null) return;
                 txt.Text = text;
-                if (!String.IsNullOrEmpty(text))
+                if (!string.IsNullOrEmpty(text))
                 {
                     if (text == "about:blank") text = "Home";
                     if (Uri.TryCreate(text, UriKind.Absolute, out Uri ouri))
@@ -234,7 +234,7 @@ namespace Panacea.Modules.WebBrowser.Controls
                                 TextWrapping = TextWrapping.NoWrap,
                                 Foreground = Brushes.Black,
                                 Background = Brushes.Transparent,
-                                FontWeight = FontWeights.SemiBold
+                                FontWeight = FontWeights.Normal
                             };
 
 
@@ -255,7 +255,7 @@ namespace Panacea.Modules.WebBrowser.Controls
                     {
                         var flow = new FlowDocument();
                         var paragraph = new Paragraph();
-                        var scheme = new Run(text) { Foreground = Brushes.White };
+                        var scheme = new Run(text) { Foreground = Brushes.Black };
                         paragraph.Inlines.Add(scheme);
                         flow.Blocks.Add(paragraph);
                         if (richtxt == null) return;
