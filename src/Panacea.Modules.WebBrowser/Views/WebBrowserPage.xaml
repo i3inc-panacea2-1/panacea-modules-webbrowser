@@ -59,6 +59,8 @@
 
 
                 <controls:AutoCompleteBox
+                    pcontrols:Material.RelativeFontSizeRatio="1.5"
+                    Foreground="Black"
                     x:Name="AutoCompleteTxt"
                     Grid.Column="1"
                     Padding="7"
@@ -66,20 +68,20 @@
                     VerticalContentAlignment="Center"
                     FontSize="{DynamicResource FontSize-Large}"
                     InvalidCertificate="{Binding ElementName=Main, Path=HasInvalidCertificate}"
-                    Text="{Binding ElementName=Main, Path=Url, Mode=TwoWay}" />
+                    Text="{Binding CurrentWebView.Url, Mode=TwoWay}" />
                 
                 <UniformGrid Grid.Column="2" Rows="1">
                     <Button
                         Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
                         pcontrols:Material.Icon="keyboard_arrow_right"
-                        Command="{Binding ElementName=Main, Path=NavigateCommand}"
+                        Command="{Binding NavigateCommand}"
                         CommandParameter="{Binding ElementName=AutoCompleteTxt, Path=InternalText}"
                         Foreground="#222" />
 
 
                     <Grid>
                         <Button Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}" 
-                                Command="{Binding ElementName=Main, Path=OpenTabsCommand}"
+                                Command="{Binding OpenTabsCommand}"
                                 pcontrols:Material.Icon="tab"
                                 Foreground="#222"/>
 
@@ -95,11 +97,11 @@
                                 Margin="-1,-2,0,0"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                pcontrols:Material.RelativeFontSizeRatio="0.6"
+                                pcontrols:Material.RelativeFontSizeRatio="0.8"
                                 FontWeight="Bold"
                                 Foreground="White"
                                 LineHeight="{Binding RelativeSource={RelativeSource Self}, Path=FontSize}"
-                                Text="{Binding ElementName=Main, Path=TabCount}" />
+                                Text="{Binding Path=TabCount}" />
                         </Border>
                     </Grid>
 
@@ -107,5 +109,6 @@
             </Grid>
         </Grid>
 
+        <ContentPresenter Grid.Row="1" Content="{Binding CurrentWebView}"/>
     </Grid>
 </UserControl>

@@ -240,7 +240,7 @@ namespace Panacea.Modules.WebBrowser.Controls
                                            ? ":" + uri.Port
                                            : ""),
                                 TextWrapping = TextWrapping.NoWrap,
-                                Foreground = Brushes.White,
+                                Foreground = Brushes.Black,
                                 Background = Brushes.Transparent,
                                 FontWeight = FontWeights.SemiBold
                             };
