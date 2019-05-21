@@ -24,30 +24,58 @@ namespace Panacea.Modules.WebBrowser
             return Task.CompletedTask;
         }
 
-        public async void Call()
+        async Task<bool> GetWebViewManager()
         {
-            if(_webViewManager == null)
+            if (_webViewManager == null)
             {
                 var plugin = _core.PluginLoader.GetPlugins<IWebViewPlugin>().FirstOrDefault();
-                if(plugin == null)
+                if (plugin == null)
                 {
-                    return;
+                    return false;
                 }
                 _webViewManager = await plugin.GetWebViewManagerAsync();
-
             }
-            _core.GetUiManager()
-                .Navigate(new WebBrowserPageViewModel(_webViewManager));
+            return true;
+        }
+
+        public async void Call()
+        {
+            if (await GetWebViewManager())
+            {
+                _core.GetUiManager()
+                    .Navigate(new WebBrowserPageViewModel(_webViewManager));
+            }
         }
 
         public void Dispose()
         {
-            
+
         }
 
         public Task EndInit()
         {
             return Task.CompletedTask;
+        }
+
+        public void OpenUnmanaged(string url, IWebViewManager manager, bool blockDomains = true, List<string> allowedDomains = null)
+        {
+            var tab = manager.CreateTab(url);
+
+            var vm = new UnmanagedTabViewModel(tab);
+
+            _core.GetUiManager().Navigate(vm, false);
+        }
+
+        public async void OpenUnmanaged(string url, bool blockDomains = true, List<string> allowedDomains = null)
+        {
+            if (await GetWebViewManager())
+            {
+                var tab = _webViewManager.CreateTab(url);
+
+                var vm = new UnmanagedTabViewModel(tab);
+
+                _core.GetUiManager().Navigate(vm, false);
+            }
         }
 
         public void OpenUrl(string url)

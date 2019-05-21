@@ -3,6 +3,7 @@ using Panacea.Modules.WebBrowser.Views;
 using Panacea.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,17 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             }
         }
 
+        private ObservableCollection<IWebView> _tabs = new ObservableCollection<IWebView>();
+        public ObservableCollection<IWebView> Tabs
+        {
+            get => _tabs;
+            set
+            {
+                _tabs = value;
+                OnPropertyChanged();
+            }
+        }
+
         public WebBrowserPageViewModel(IWebViewManager webViewManager)
         {
             _webViewManager = webViewManager;
@@ -35,7 +47,19 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             if(CurrentWebView == null)
             {
                 CurrentWebView = _webViewManager.CreateTab();
+                Tabs.Add(CurrentWebView);
             }
+        }
+
+        public override void Deactivate()
+        {
+            var tabs = Tabs.ToList();
+            Tabs.Clear();
+            foreach(var tab in tabs)
+            {
+                tab.Dispose();
+            }
+
         }
     }
 }
