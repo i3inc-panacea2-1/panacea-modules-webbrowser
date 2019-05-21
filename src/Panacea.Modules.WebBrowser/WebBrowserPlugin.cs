@@ -1,6 +1,5 @@
 ﻿using Panacea.Core;
 using Panacea.Modularity.UiManager;
-using Panacea.Modularity.UiManager.Extensions;
 using Panacea.Modularity.WebBrowsing;
 using Panacea.Modules.WebBrowser.ViewModels;
 using System;
@@ -40,10 +39,9 @@ namespace Panacea.Modules.WebBrowser
 
         public async void Call()
         {
-            if (await GetWebViewManager())
+            if (_core.TryGetUiManager(out IUiManager ui) && await GetWebViewManager())
             {
-                _core.GetUiManager()
-                    .Navigate(new WebBrowserPageViewModel(_webViewManager));
+                ui.Navigate(new WebBrowserPageViewModel(_webViewManager));
             }
         }
 
@@ -59,22 +57,23 @@ namespace Panacea.Modules.WebBrowser
 
         public void OpenUnmanaged(string url, IWebViewManager manager, bool blockDomains = true, List<string> allowedDomains = null)
         {
-            var tab = manager.CreateTab(url);
-
-            var vm = new UnmanagedTabViewModel(tab);
-
-            _core.GetUiManager().Navigate(vm, false);
+            if (_core.TryGetUiManager(out IUiManager ui))
+            {
+                var tab = manager.CreateTab(url);
+                var vm = new UnmanagedTabViewModel(tab);
+                ui.Navigate(vm, false);
+            }
         }
 
         public async void OpenUnmanaged(string url, bool blockDomains = true, List<string> allowedDomains = null)
         {
-            if (await GetWebViewManager())
+            if (_core.TryGetUiManager(out IUiManager ui) && await GetWebViewManager())
             {
                 var tab = _webViewManager.CreateTab(url);
 
                 var vm = new UnmanagedTabViewModel(tab);
 
-                _core.GetUiManager().Navigate(vm, false);
+                ui.Navigate(vm, false);
             }
         }
 
