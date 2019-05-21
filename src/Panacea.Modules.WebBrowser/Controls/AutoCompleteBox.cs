@@ -25,15 +25,15 @@ namespace Panacea.Modules.WebBrowser.Controls
         }
 
         #region deps
-        public Geometry Icon
+        public string Icon
         {
-            get { return (Geometry)GetValue(IconProperty); }
+            get { return (string)GetValue(IconProperty); }
             set { SetValue(IconProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for Icon.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IconProperty =
-            DependencyProperty.Register("Icon", typeof(Geometry), typeof(AutoCompleteBox), new PropertyMetadata(null));
+            DependencyProperty.Register("Icon", typeof(string), typeof(AutoCompleteBox), new PropertyMetadata("lock"));
 
 
 
@@ -106,6 +106,18 @@ namespace Panacea.Modules.WebBrowser.Controls
             DependencyProperty.Register("InternalText", typeof(string), typeof(AutoCompleteBox), new PropertyMetadata(null));
 
 
+
+        public ICommand NavigateCommand
+        {
+            get { return (ICommand)GetValue(NavigateCommandProperty); }
+            set { SetValue(NavigateCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for NavigateCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty NavigateCommandProperty =
+            DependencyProperty.Register("NavigateCommand", typeof(ICommand), typeof(AutoCompleteBox), new PropertyMetadata(null));
+
+
         #endregion deps
 
         public AutoCompleteBox()
@@ -116,7 +128,7 @@ namespace Panacea.Modules.WebBrowser.Controls
               new RoutedEventHandler(SelectAllText), true);
             AddHandler(MouseDoubleClickEvent,
               new RoutedEventHandler(SelectAllText), true);
-            Icon = Geometry.Parse("F1 M 36.002, 0.000488281C 52.3457, 0.000488281 66, 13.6509 66, 30.0005L 66, 36.0005L 72.002, 36.0005L 72.002, 96L 0, 96L 0, 36.0005L 6, 36.0005L 6, 30.0005C 6, 13.6509 19.6543, 0.000488281 36.002, 0.000488281 Z M 14.666, 30.646L 14.666, 36.0005L 57.333, 36.0005L 57.333, 30.646C 57.333, 19.7476 46.8955, 9.31299 36.001, 9.31299C 25.1035, 9.31299 14.666, 19.7476 14.666, 30.646 Z M 44, 82.001L 38.5273, 65.5859C 41.7061, 64.5288 44, 61.5352 44, 58.001C 44, 53.582 40.4199, 50.001 36, 50.001C 31.5811, 50.001 28, 53.582 28, 58.001C 28, 61.5352 30.293, 64.5288 33.4717, 65.5859L 28, 82.001L 44, 82.001 Z ");
+            
             InvalidCertificate = false;
             History = new List<string>();
         }
@@ -166,38 +178,18 @@ namespace Panacea.Modules.WebBrowser.Controls
             var val = (bool)e.NewValue;
             if (val)
             {
-                box.Icon = Geometry.Parse("F1 M 36.002,0.000488281C 52.3457,0.000488281 66,13.6509 66,30.0005L 66,36.0005L 72.002,36.0005L 72.002,96L 0,96L 0,36.0005L 57.334,36.0005L 57.334,30.645C 57.334,19.7466 46.8965,9.31201 36.002,9.31201C 29.9551,9.31201 24.0566,12.5298 19.9951,17.2524L 12.1367,12.0005C 17.6543,4.74951 26.3604,0.000488281 36.002,0.000488281 Z M 44,82.001L 38.5273,65.5859C 41.7061,64.5288 44,61.5352 44,58.001C 44,53.582 40.4199,50.001 36,50.001C 31.5811,50.001 28,53.582 28,58.001C 28,61.5352 30.293,64.5288 33.4717,65.5859L 28,82.001L 44,82.001 Z ");
-                LinearGradientBrush linear = new LinearGradientBrush();
-                linear.StartPoint = new Point(0, 0);
-                linear.EndPoint = new Point(0, 1);
-                linear.SpreadMethod = GradientSpreadMethod.Pad;
-                linear.ColorInterpolationMode = ColorInterpolationMode.SRgbLinearInterpolation;
+                box.Icon = "lock_open";
 
-                linear.GradientStops.Add(new GradientStop(Color.FromArgb(0xFF, 255, 20, 20), 0));
-                linear.GradientStops.Add(new GradientStop(Color.FromArgb(0xFF, 210, 10, 10), 1));
-                linear.Freeze();
-                box.HttpsBackground = linear;
-                var brush = new SolidColorBrush(Color.FromRgb(180, 0, 0));
-                brush.Freeze();
-                box.HttpsBorderBackground = brush;
+                box.HttpsBackground = new SolidColorBrush(Color.FromRgb(244, 67, 54));
+                
+                box.HttpsBorderBackground = new SolidColorBrush(Color.FromRgb(224, 57, 44));
             }
             else
             {
-                box.Icon = Geometry.Parse("F1 M 36.002, 0.000488281C 52.3457, 0.000488281 66, 13.6509 66, 30.0005L 66, 36.0005L 72.002, 36.0005L 72.002, 96L 0, 96L 0, 36.0005L 6, 36.0005L 6, 30.0005C 6, 13.6509 19.6543, 0.000488281 36.002, 0.000488281 Z M 14.666, 30.646L 14.666, 36.0005L 57.333, 36.0005L 57.333, 30.646C 57.333, 19.7476 46.8955, 9.31299 36.001, 9.31299C 25.1035, 9.31299 14.666, 19.7476 14.666, 30.646 Z M 44, 82.001L 38.5273, 65.5859C 41.7061, 64.5288 44, 61.5352 44, 58.001C 44, 53.582 40.4199, 50.001 36, 50.001C 31.5811, 50.001 28, 53.582 28, 58.001C 28, 61.5352 30.293, 64.5288 33.4717, 65.5859L 28, 82.001L 44, 82.001 Z ");
-                LinearGradientBrush linear = new LinearGradientBrush();
-                linear.StartPoint = new Point(0, 0);
-                linear.EndPoint = new Point(0, 1);
-                linear.SpreadMethod = GradientSpreadMethod.Pad;
-                linear.ColorInterpolationMode = ColorInterpolationMode.SRgbLinearInterpolation;
-
-                linear.GradientStops.Add(new GradientStop(Color.FromArgb(0xFF, 7, 230, 138), 0));
-                linear.GradientStops.Add(new GradientStop(Color.FromArgb(0xFF, 6, 200, 120), 1));
-                linear.Freeze();
-
-                box.HttpsBackground = linear;
-                var brush = new SolidColorBrush(Color.FromRgb(1, 180, 120));
-                brush.Freeze();
-                box.HttpsBorderBackground = brush;
+                box.Icon = "lock";
+               
+                box.HttpsBackground = new SolidColorBrush(Color.FromRgb(139, 195, 74));
+                box.HttpsBorderBackground = new SolidColorBrush(Color.FromRgb(119, 175, 64));
             }
         }
 
@@ -321,13 +313,17 @@ namespace Panacea.Modules.WebBrowser.Controls
 
         private void OnReturnPress()
         {
+            cts?.Cancel();
             History.Remove(Text);
             History.Insert(0, Text);
             var h = ReturnPress;
             h?.Invoke(this, new EventArgs());
+            NavigateCommand?.Execute(txt.Text);
         }
+
         TextBox txt;
         private RichTextBox richtxt;
+        CancellationTokenSource cts;
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -350,7 +346,7 @@ namespace Panacea.Modules.WebBrowser.Controls
             if (listbox == null) return;
 
             var search = new SearchSuggestionsAPI();
-            var cts = new CancellationTokenSource();
+            
             Task<List<GoogleSuggestion>> task;
 
             border.PreviewMouseDown += (oo, ee) =>

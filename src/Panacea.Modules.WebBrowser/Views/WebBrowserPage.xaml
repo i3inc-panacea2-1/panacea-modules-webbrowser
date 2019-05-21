@@ -67,8 +67,10 @@
                     VerticalAlignment="Center"
                     VerticalContentAlignment="Center"
                     FontSize="{DynamicResource FontSize-Large}"
-                    InvalidCertificate="{Binding ElementName=Main, Path=HasInvalidCertificate}"
-                    Text="{Binding CurrentWebView.Url, Mode=TwoWay}" />
+                    Text="{Binding CurrentWebView.Url, Mode=TwoWay}"
+                    NavigateCommand="{Binding NavigateCommand}"
+                    InvalidCertificate="{Binding HasInvalidCertificate}"
+                    />
                 
                 <UniformGrid Grid.Column="2" Rows="1">
                     <Button

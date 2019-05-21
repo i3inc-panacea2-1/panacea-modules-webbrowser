@@ -1,4 +1,5 @@
-﻿using Panacea.Modularity.WebBrowsing;
+﻿using Panacea.Controls;
+using Panacea.Modularity.WebBrowsing;
 using Panacea.Modules.WebBrowser.Views;
 using Panacea.Mvvm;
 using System;
@@ -7,11 +8,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Panacea.Modules.WebBrowser.ViewModels
 {
     [View(typeof(WebBrowserPage))]
-    public class WebBrowserPageViewModel:ViewModelBase
+    public class WebBrowserPageViewModel : ViewModelBase
     {
         private readonly IWebViewManager _webViewManager;
 
@@ -37,17 +39,84 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             }
         }
 
+        private bool _hasInvalidCertificate;
+        public bool HasInvalidCertificate
+        {
+            get => _hasInvalidCertificate;
+            set
+            {
+                _hasInvalidCertificate = value;
+                OnPropertyChanged();
+            }
+        }
+
         public WebBrowserPageViewModel(IWebViewManager webViewManager)
         {
             _webViewManager = webViewManager;
+            NavigateCommand = new RelayCommand((args) =>
+            {
+                if (CurrentWebView == null)
+                {
+                    CreateTab();
+                }
+                var url = args.ToString();
+                if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
+                {
+                    var uri = new Uri(url);
+
+                    if (uri.Scheme != "https" && uri.Scheme != "http" && uri.Scheme != "javascript" && !uri.ToString().StartsWith("about:blank"))
+                    {
+                        //_window.ThemeManager.Toast(new Translator("WebBrowser").Translate("Access denied"));
+                        return;
+                    }
+                    CurrentWebView?.Navigate(url);
+                }
+                else if (url.Contains(".") &&
+                         Uri.IsWellFormedUriString("http://" + url, UriKind.Absolute))
+                {
+                    CurrentWebView?.Navigate(url);
+                }
+                else
+                {
+                    CurrentWebView?.Navigate("https://www.google.com/search?q=" + url);
+                }
+
+                Keyboard.ClearFocus();
+            });
+        }
+
+        void CreateTab()
+        {
+            var view = _webViewManager.CreateTab();
+            Tabs.Add(view);
+            SwitchToTab(view);
+            
+        }
+
+        void SwitchToTab(IWebView webView)
+        {
+            AttachToWebView(webView);
+            CurrentWebView = webView;
+        }
+
+        void AttachToWebView(IWebView webview)
+        {
+            webview.HasInvalidCertificateChanged += Webview_HasInvalidCertificateChanged;
+        }
+
+        private void Webview_HasInvalidCertificateChanged(object sender, bool e)
+        {
+            if(CurrentWebView == sender)
+            {
+                HasInvalidCertificate = e;
+            }
         }
 
         public override void Activate()
         {
-            if(CurrentWebView == null)
+            if (CurrentWebView == null)
             {
-                CurrentWebView = _webViewManager.CreateTab();
-                Tabs.Add(CurrentWebView);
+                CreateTab();
             }
         }
 
@@ -55,11 +124,13 @@ namespace Panacea.Modules.WebBrowser.ViewModels
         {
             var tabs = Tabs.ToList();
             Tabs.Clear();
-            foreach(var tab in tabs)
+            foreach (var tab in tabs)
             {
                 tab.Dispose();
             }
 
         }
+
+        public RelayCommand NavigateCommand { get; }
     }
 }
