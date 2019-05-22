@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Panacea.Modules.WebBrowser.ViewModels
@@ -46,6 +47,28 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             set
             {
                 _hasInvalidCertificate = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _tabSelectorVisibility = Visibility.Collapsed;
+        public Visibility TabSelectorVisibility
+        {
+            get => _tabSelectorVisibility;
+            set
+            {
+                _tabSelectorVisibility = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Visibility _mainUiVisibility = Visibility.Visible;
+        public Visibility MainUiVisibility
+        {
+            get => _mainUiVisibility;
+            set
+            {
+                _mainUiVisibility = value;
                 OnPropertyChanged();
             }
         }
@@ -100,6 +123,18 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             {
                 return CurrentWebView?.CanGoForward == true;
             });
+            SwitchTabSelectorCommand = new RelayCommand((args) =>
+            {
+                ShowTabSelector();
+            });
+            SelectTabCommand = new RelayCommand((args) =>
+            {
+                SwitchToTab(args as IWebView);
+            });
+            AddTabCommand = new RelayCommand((args) =>
+            {
+                CreateTab();
+            });
         }
 
         void CreateTab()
@@ -114,6 +149,19 @@ namespace Panacea.Modules.WebBrowser.ViewModels
         {
             AttachToWebView(webView);
             CurrentWebView = webView;
+            ShowMainUi();
+        }
+
+        void ShowMainUi()
+        {
+            MainUiVisibility = Visibility.Visible;
+            TabSelectorVisibility = Visibility.Collapsed;
+        }
+
+        void ShowTabSelector()
+        {
+            MainUiVisibility = Visibility.Collapsed;
+            TabSelectorVisibility = Visibility.Visible;
         }
 
         void AttachToWebView(IWebView webview)
@@ -165,5 +213,11 @@ namespace Panacea.Modules.WebBrowser.ViewModels
         public RelayCommand BackCommand { get; }
 
         public RelayCommand ForwardCommand { get; }
+
+        public RelayCommand SwitchTabSelectorCommand { get; }
+
+        public RelayCommand SelectTabCommand { get; }
+
+        public RelayCommand AddTabCommand { get; }
     }
 }

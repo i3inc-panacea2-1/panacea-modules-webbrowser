@@ -7,9 +7,14 @@
     xmlns:local="clr-namespace:Panacea.Modules.WebBrowser.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pcontrols="clr-namespace:Panacea.Controls;assembly=Panacea.Controls"
+    xmlns:vm="clr-namespace:Panacea.Modules.WebBrowser.ViewModels"
     d:DesignHeight="550"
     d:DesignWidth="2100"
+    Background="White"
     mc:Ignorable="d">
+    <d:DataContext>
+        <x:Type Type="vm:WebBrowserPageViewModel" />
+    </d:DataContext>
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -17,100 +22,122 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Background="White">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-
-        <Grid Background="#e5e5e5">
+    <Grid>
+        <Grid Visibility="{Binding MainUiVisibility}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="18*" />
-                <RowDefinition Height=".5*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="1" Margin="5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto" />
-                    <ColumnDefinition Width="7*" />
-                    <ColumnDefinition Width="auto" />
-                </Grid.ColumnDefinitions>
-                <UniformGrid Margin="20,0,0,0" Rows="1">
-                    <Button
-                        Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
-                        HorizontalAlignment="Center"
-                        pcontrols:Material.Icon="keyboard_arrow_left"
-                        Command="{Binding BackCommand}"
-                        Foreground="#222" />
-                    <Button
-                        Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
-                        HorizontalAlignment="Center"
-                        pcontrols:Material.Icon="keyboard_arrow_right"
-                        Command="{Binding ForwardCommand}"
-                        Foreground="#222" />
-                    <Button
-                        Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
-                        HorizontalAlignment="Center"
-                        pcontrols:Material.Icon="home"
-                        Command="{Binding ElementName=Main, Path=GoHomeCommand}"
-                        Foreground="#222" />
-                </UniformGrid>
+            <Grid Background="#e5e5e5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="18*" />
+                    <RowDefinition Height=".5*" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="1" Margin="5">
+                    <Grid.Resources>
+                        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                            <Style.Setters>
+                                <Setter Property="Foreground" Value="#222" />
+                            </Style.Setters>
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
+                        <ColumnDefinition Width="7*" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <UniformGrid Margin="20,0,0,0" Rows="1">
+                        <Button
+                            Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
+                            Padding="0"
+                            HorizontalAlignment="Center"
+                            Command="{Binding BackCommand}">
+                            <pcontrols:MaterialIcon Icon="keyboard_arrow_left" />
+                        </Button>
+                        <Button
+                            Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
+                            Padding="0"
+                            HorizontalAlignment="Center"
+                            Command="{Binding ForwardCommand}">
+                            <pcontrols:MaterialIcon Icon="keyboard_arrow_right" />
+                        </Button>
+                        <Button
+                            Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
+                            Padding="6"
+                            HorizontalAlignment="Center"
+                            Command="{Binding ElementName=Main, Path=GoHomeCommand}">
+                            <pcontrols:MaterialIcon Icon="home" />
+                        </Button>
+                    </UniformGrid>
 
 
-                <controls:AutoCompleteBox
-                    pcontrols:Material.RelativeFontSizeRatio="1.5"
-                    Foreground="Black"
-                    x:Name="AutoCompleteTxt"
-                    Grid.Column="1"
-                    Padding="7"
-                    VerticalAlignment="Center"
-                    VerticalContentAlignment="Center"
-                    FontSize="{DynamicResource FontSize-Large}"
-                    Text="{Binding CurrentWebView.Url, Mode=TwoWay}"
-                    NavigateCommand="{Binding NavigateCommand}"
-                    InvalidCertificate="{Binding HasInvalidCertificate}"
-                    />
-                
-                <UniformGrid Grid.Column="2" Rows="1">
-                    <Button
-                        Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
-                        pcontrols:Material.Icon="keyboard_arrow_right"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="{Binding ElementName=AutoCompleteTxt, Path=InternalText}"
-                        Foreground="#222" />
+                    <controls:AutoCompleteBox
+                        x:Name="AutoCompleteTxt"
+                        Grid.Column="1"
+                        Padding="7"
+                        VerticalAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        pcontrols:Material.RelativeFontSizeRatio="1.5"
+                        FontSize="{DynamicResource FontSize-Large}"
+                        Foreground="Black"
+                        InvalidCertificate="{Binding HasInvalidCertificate}"
+                        NavigateCommand="{Binding NavigateCommand}"
+                        Text="{Binding CurrentWebView.Url, Mode=TwoWay}" />
+
+                    <UniformGrid Grid.Column="2" Rows="1">
+                        <Button
+                            Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
+                            Padding="0"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="{Binding ElementName=AutoCompleteTxt, Path=InternalText}">
+                            <pcontrols:MaterialIcon Icon="keyboard_arrow_right" />
+                        </Button>
 
 
-                    <Grid>
-                        <Button Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}" 
-                                Command="{Binding OpenTabsCommand}"
-                                pcontrols:Material.Icon="tab"
-                                Foreground="#222"/>
+                        <Grid>
+                            <Button
+                                Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
+                                Padding="6"
+                                Command="{Binding SwitchTabSelectorCommand}">
+                                <pcontrols:MaterialIcon Icon="tab" />
+                            </Button>
 
-                        <Border
-                            Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
-                            Margin="0,0,1,1"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Bottom"
-                            Background="#F44336"
-                            CornerRadius="100">
+                            <Border
+                                Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+                                Margin="0,0,1,1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Background="#F44336"
+                                CornerRadius="100">
 
-                            <TextBlock
-                                Margin="1"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                pcontrols:Material.RelativeFontSizeRatio="0.8"
-                                FontWeight="Bold"
-                                Foreground="White"
-                                LineHeight="{Binding RelativeSource={RelativeSource Self}, Path=FontSize}"
-                                Text="{Binding Tabs.Count}" />
-                        </Border>
-                    </Grid>
+                                <TextBlock
+                                    Margin="1"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    pcontrols:Material.RelativeFontSizeRatio="0.8"
+                                    FontWeight="Bold"
+                                    Foreground="White"
+                                    LineHeight="{Binding RelativeSource={RelativeSource Self}, Path=FontSize}"
+                                    Text="{Binding Tabs.Count}" />
+                            </Border>
+                        </Grid>
 
-                </UniformGrid>
+                    </UniformGrid>
+                </Grid>
             </Grid>
+
+            <ContentPresenter Grid.Row="1" Content="{Binding CurrentWebView}" />
         </Grid>
 
-        <ContentPresenter Grid.Row="1" Content="{Binding CurrentWebView}"/>
+        <controls:TabSelector
+            d:IsHidden="true"
+            AddTabCommand="{Binding AddTabCommand}"
+            SelectTabCommand="{Binding SelectTabCommand}"
+            Tabs="{Binding Tabs}"
+            Visibility="{Binding TabSelectorVisibility}" />
     </Grid>
+
 </UserControl>

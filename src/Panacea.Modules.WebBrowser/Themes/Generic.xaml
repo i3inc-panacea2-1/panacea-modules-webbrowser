@@ -64,8 +64,8 @@
                                             <pcontrols:MaterialIcon
                                                 Height="{Binding ElementName=PART_ssl, Path=ActualHeight}"
                                                 Margin="4"
-                                                Icon="{Binding RelativeSource={RelativeSource AncestorType=webbrowser:AutoCompleteBox}, Path=Icon}"
-                                                />
+                                                Foreground="White"
+                                                Icon="{Binding RelativeSource={RelativeSource AncestorType=webbrowser:AutoCompleteBox}, Path=Icon}" />
                                             <TextBlock
                                                 x:Name="PART_ssl"
                                                 Grid.Column="1"
