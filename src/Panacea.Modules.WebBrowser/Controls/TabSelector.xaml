@@ -20,9 +20,9 @@
         </Grid.RowDefinitions>
         <DockPanel Margin="20" LastChildFill="False">
             <Button
-                Command="{Binding RelativeSource={RelativeSource AncestorType=local:TabSelector}, Path=AddTabCommand}"
                 pcontrols:Material.Icon="add_circle"
                 pcontrols:Material.RelativeFontSizeRatio="2.0"
+                Command="{Binding RelativeSource={RelativeSource AncestorType=local:TabSelector}, Path=AddTabCommand}"
                 Content="{multilinguality:Translate 'Add new',
                                                     'WebBrowser'}"
                 DockPanel.Dock="Left"
@@ -53,8 +53,8 @@
                             </Border.Effect>
                         </Border>
                         <Button
-                            Padding="0"
                             Margin="15"
+                            Padding="0"
                             VerticalAlignment="Top"
                             HorizontalContentAlignment="Left"
                             VerticalContentAlignment="Stretch"
@@ -69,7 +69,7 @@
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*" />
-                                    <ColumnDefinition Width="7*"/>
+                                    <ColumnDefinition Width="7*" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock
                                     Grid.Column="1"
@@ -84,11 +84,14 @@
                                     pcontrols:Material.RelativeFontSizeRatio="0.8"
                                     Text="{Binding Url}"
                                     TextTrimming="CharacterEllipsis" />
-                                <Viewbox Grid.RowSpan="2" Stretch="Uniform" VerticalAlignment="Center" Margin="5">
-                                    <Image
-                                    Source="{Binding Image}" />
+                                <Viewbox
+                                    Grid.RowSpan="2"
+                                    Margin="5"
+                                    VerticalAlignment="Center"
+                                    Stretch="Uniform">
+                                    <Image Source="{Binding Image}" />
                                 </Viewbox>
-                               
+
                             </Grid>
                         </Button>
                     </Grid>
