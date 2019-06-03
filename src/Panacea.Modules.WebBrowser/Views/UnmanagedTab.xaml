@@ -17,9 +17,10 @@
         </Grid.RowDefinitions>
         <DockPanel Background="Black">
             <Button DockPanel.Dock="Left"
-                    
+                    Command="{Binding BackCommand}"
                     Margin="0"
                     Padding="0 0 0 0"
+                    Foreground="White"
                     pcontrols:Material.RelativeFontSizeRatio="1.3"
                     Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
                 <pcontrols:MaterialIcon Icon="keyboard_arrow_left"/>

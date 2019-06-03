@@ -1,4 +1,5 @@
-﻿using Panacea.Modularity.WebBrowsing;
+﻿using Panacea.Controls;
+using Panacea.Modularity.WebBrowsing;
 using Panacea.Modules.WebBrowser.Views;
 using Panacea.Mvvm;
 using System;
@@ -16,6 +17,20 @@ namespace Panacea.Modules.WebBrowser.ViewModels
         public UnmanagedTabViewModel(IWebView tab)
         {
             WebView = tab;
+
+            BackCommand = new RelayCommand(arg =>
+            {
+                if (WebView?.CanGoBack == true) WebView?.GoBack();
+            },
+            arg => WebView?.CanGoBack == true);
         }
+
+        public override void Deactivate()
+        {
+            base.Deactivate();
+            WebView?.Dispose();
+        }
+
+        public RelayCommand BackCommand { get; }
     }
 }
