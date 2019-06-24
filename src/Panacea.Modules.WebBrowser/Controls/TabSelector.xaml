@@ -21,11 +21,11 @@
         <DockPanel Margin="20" LastChildFill="False">
             <Button
                 pcontrols:Material.Icon="add_circle"
-                pcontrols:Material.RelativeFontSizeRatio="2.0"
                 Command="{Binding RelativeSource={RelativeSource AncestorType=local:TabSelector}, Path=AddTabCommand}"
                 Content="{multilinguality:Translate 'Add new',
                                                     'WebBrowser'}"
                 DockPanel.Dock="Left"
+                FontSize="{DynamicResource FontSize-Xxx-Large}"
                 Foreground="Black" />
         </DockPanel>
 
@@ -74,14 +74,14 @@
                                 <TextBlock
                                     Grid.Column="1"
                                     Margin="5,5,15,0"
-                                    pcontrols:Material.RelativeFontSizeRatio="1.4"
+                                    FontSize="{DynamicResource FontSize-X-Large}"
                                     Text="{Binding Title}"
                                     TextTrimming="CharacterEllipsis" />
                                 <TextBlock
                                     Grid.Row="1"
                                     Grid.Column="1"
                                     Margin="5,0,15,13"
-                                    pcontrols:Material.RelativeFontSizeRatio="0.8"
+                                    FontSize="{DynamicResource FontSize-X-Small}"
                                     Text="{Binding Url}"
                                     TextTrimming="CharacterEllipsis" />
                                 <Viewbox

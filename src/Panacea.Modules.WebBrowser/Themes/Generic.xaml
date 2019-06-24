@@ -23,11 +23,11 @@
                                     VerticalAlignment="Stretch"
                                     VerticalContentAlignment="Center"
                                     BorderThickness="0"
-                                    FontSize="{TemplateBinding FontSize}"
                                     Foreground="{TemplateBinding Foreground}"
                                     Style="{x:Null}"
                                     Text="{Binding RelativeSource={RelativeSource AncestorType=webbrowser:AutoCompleteBox}, Path=InternalText, UpdateSourceTrigger=PropertyChanged}"
-                                    Visibility="Hidden" />
+                                    Visibility="Hidden" 
+                                    FontSize="{DynamicResource FontSize-X-Large}"/>
                             </Border>
 
                             <Border
@@ -71,13 +71,13 @@
                                                 Grid.Column="1"
                                                 Margin="1,1,8,1"
                                                 VerticalAlignment="Center"
-                                                pcontrols:Material.RelativeFontSizeRatio="1.0"
                                                 Foreground="White"
                                                 Text="https://" />
                                         </Grid>
                                     </Border>
 
                                     <RichTextBox
+                                        FontSize="{DynamicResource FontSize-X-Large}"
                                         Name="FlowDoc"
                                         Grid.Column="2"
                                         Margin="6,0,0,0"
@@ -85,7 +85,6 @@
                                         VerticalAlignment="Center"
                                         Background="Transparent"
                                         BorderThickness="0"
-                                        FontSize="{TemplateBinding FontSize}"
                                         Foreground="{TemplateBinding Foreground}"
                                         HorizontalScrollBarVisibility="Hidden"
                                         IsReadOnly="True" />

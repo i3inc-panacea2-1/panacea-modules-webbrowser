@@ -21,13 +21,13 @@
                     Margin="0"
                     Padding="0 0 0 0"
                     Foreground="White"
-                    pcontrols:Material.RelativeFontSizeRatio="1.3"
+                    FontSize="{DynamicResource Fontsize-X-Large}"
                     Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
                 <pcontrols:MaterialIcon Icon="keyboard_arrow_left"/>
             </Button>
             <TextBlock Foreground="White" Text="{Binding WebView.Title}"
                        Margin="10"
-                       pcontrols:Material.RelativeFontSizeRatio="1.3"
+                       FontSize="{DynamicResource Fontsize-X-Large}"
                        VerticalAlignment="Center"/>
         </DockPanel>
         <ContentPresenter Grid.Row="1" Content="{Binding WebView}" />

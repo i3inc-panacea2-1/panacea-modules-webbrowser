@@ -15,13 +15,7 @@
     <d:DataContext>
         <x:Type Type="vm:WebBrowserPageViewModel" />
     </d:DataContext>
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Panacea.Controls;component/Styles/Default.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
+
     <Grid>
         <Grid Visibility="{Binding MainUiVisibility}">
             <Grid.RowDefinitions>
@@ -38,10 +32,24 @@
 
                 <Grid Grid.Row="1" Margin="5">
                     <Grid.Resources>
-                        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
-                            <Style.Setters>
-                                <Setter Property="Foreground" Value="#222" />
-                            </Style.Setters>
+                        <Style TargetType="Button">
+                            <Setter Property="OverridesDefaultStyle" Value="True"/>
+                            <Setter Property="Foreground" Value="#222" />
+                            <Setter Property="Padding" Value="10 6 10 6"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <pcontrols:RippleEffectDecorator>
+                                            <ContentPresenter Margin="{TemplateBinding Padding}"/>
+                                        </pcontrols:RippleEffectDecorator>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Opacity" Value=".2"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </Grid.Resources>
                     <Grid.ColumnDefinitions>
@@ -52,21 +60,21 @@
                     <UniformGrid Margin="20,0,0,0" Rows="1">
                         <Button
                             Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
-                            Padding="0"
+                            Padding="10 0 10 0"
                             HorizontalAlignment="Center"
                             Command="{Binding BackCommand}">
                             <pcontrols:MaterialIcon Icon="keyboard_arrow_left" />
                         </Button>
                         <Button
                             Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
-                            Padding="0"
+                            Padding="10 0 10 0"
                             HorizontalAlignment="Center"
                             Command="{Binding ForwardCommand}">
                             <pcontrols:MaterialIcon Icon="keyboard_arrow_right" />
                         </Button>
                         <Button
                             Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
-                            Padding="6"
+                            Padding="10 6 10 6"
                             HorizontalAlignment="Center"
                             Command="{Binding ElementName=Main, Path=GoHomeCommand}">
                             <pcontrols:MaterialIcon Icon="home" />
@@ -80,8 +88,7 @@
                         Padding="7"
                         VerticalAlignment="Center"
                         VerticalContentAlignment="Center"
-                        pcontrols:Material.RelativeFontSizeRatio="1.5"
-                        FontSize="{DynamicResource FontSize-Large}"
+                        FontSize="{DynamicResource Fontsize-Xx-Large}"
                         Foreground="Black"
                         InvalidCertificate="{Binding HasInvalidCertificate}"
                         NavigateCommand="{Binding NavigateCommand}"
@@ -90,7 +97,7 @@
                     <UniformGrid Grid.Column="2" Rows="1">
                         <Button
                             Height="{Binding ElementName=AutoCompleteTxt, Path=ActualHeight}"
-                            Padding="0"
+                            Padding="10 0 10 0"
                             Command="{Binding NavigateCommand}"
                             CommandParameter="{Binding ElementName=AutoCompleteTxt, Path=InternalText}">
                             <pcontrols:MaterialIcon Icon="keyboard_arrow_right" />
@@ -117,7 +124,7 @@
                                     Margin="1"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    pcontrols:Material.RelativeFontSizeRatio="0.8"
+                                    FontSize="{DynamicResource Fontsize-X-Small}"
                                     FontWeight="Bold"
                                     Foreground="White"
                                     LineHeight="{Binding RelativeSource={RelativeSource Self}, Path=FontSize}"
