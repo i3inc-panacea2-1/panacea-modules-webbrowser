@@ -1,4 +1,6 @@
 ﻿using Panacea.Core;
+using Panacea.Models;
+using Panacea.Modularity.Favorites;
 using Panacea.Modularity.UiManager;
 using Panacea.Modularity.WebBrowsing;
 using Panacea.Modules.WebBrowser.ViewModels;
@@ -10,10 +12,13 @@ using System.Threading.Tasks;
 
 namespace Panacea.Modules.WebBrowser
 {
-    public class WebBrowserPlugin : IWebBrowserPlugin, ICallablePlugin
+    public class WebBrowserPlugin : IWebBrowserPlugin, ICallablePlugin, IHasFavoritesPlugin
     {
         private readonly PanaceaServices _core;
         private IWebViewManager _webViewManager;
+
+        public List<ServerItem> Favorites { get; set; }
+
         public WebBrowserPlugin(PanaceaServices core)
         {
             _core = core;
@@ -41,7 +46,7 @@ namespace Panacea.Modules.WebBrowser
         {
             if (_core.TryGetUiManager(out IUiManager ui) && await GetWebViewManager())
             {
-                ui.Navigate(new WebBrowserPageViewModel(_webViewManager));
+                ui.Navigate(new WebBrowserPageViewModel(_webViewManager, new LinkItemProvider(_core), this, _core));
             }
         }
 
@@ -85,6 +90,11 @@ namespace Panacea.Modules.WebBrowser
         public Task Shutdown()
         {
             return Task.CompletedTask;
+        }
+
+        public Type GetContentType()
+        {
+            throw new NotImplementedException();
         }
     }
 }

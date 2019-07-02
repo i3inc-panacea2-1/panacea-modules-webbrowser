@@ -1,6 +1,11 @@
 ﻿using Panacea.Controls;
+using Panacea.Core;
+using Panacea.Modularity.Billing;
+using Panacea.Modularity.Favorites;
 using Panacea.Modularity.WebBrowsing;
+using Panacea.Modules.WebBrowser.Models;
 using Panacea.Modules.WebBrowser.Views;
+using Panacea.Multilinguality;
 using Panacea.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -16,6 +21,121 @@ namespace Panacea.Modules.WebBrowser.ViewModels
     [View(typeof(WebBrowserPage))]
     public class WebBrowserPageViewModel : ViewModelBase
     {
+        public WebBrowserPageViewModel(IWebViewManager webViewManager, LinkItemProvider provider, WebBrowserPlugin plugin, PanaceaServices core)
+        {
+            _webViewManager = webViewManager;
+            ItemProvider = provider;
+            ItemClickCommand = new RelayCommand(args =>
+            {
+                var link = args as Link;
+                NavigateCommand?.Execute(link.DataUrl);
+            });
+            IsFavoriteCommand = new RelayCommand((arg) =>
+            {
+            },
+            (arg) =>
+            {
+                var link = arg as Link;
+                if (plugin.Favorites == null) return false;
+                return plugin.Favorites.Any(l => l.Id == link.Id);
+            });
+            FavoriteCommand = new AsyncCommand(async (args) =>
+            {
+                var game = args as Link;
+                if (game == null) return;
+                if (core.TryGetFavoritesPlugin(out IFavoritesManager _favoritesManager))
+                {
+                    try
+                    {
+                        if (await _favoritesManager.AddOrRemoveFavoriteAsync("WebBrowser", game))
+                            OnPropertyChanged(nameof(IsFavoriteCommand));
+                    }
+                    catch (Exception e)
+                    {
+                        core.Logger.Error(this, e.Message);
+                    }
+                }
+            });
+            NavigateCommand = new RelayCommand(async (args) =>
+            {
+                if (CurrentWebView == null)
+                {
+                    CreateTab();
+                }
+                var url = args.ToString();
+                if (url.ToLower() == "about:blank")
+                {
+                    WebViewContainerVisibility = Visibility.Collapsed;
+                    CurrentWebView?.Navigate(url);
+                    return;
+                }
+                if (core.TryGetBilling(out IBillingManager bill))
+                {
+                    var service = await bill.GetOrRequestServiceAsync(new Translator("WebBrowser").Translate("Web browser requires service."), "WebBrowser");
+                    if (service == null) return;
+
+                }
+                if (CurrentWebView == null)
+                {
+                    CreateTab();
+                }
+                if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
+                {
+                    var uri = new Uri(url);
+
+                    if (uri.Scheme != "https" && uri.Scheme != "http" && uri.Scheme != "javascript" && !uri.ToString().StartsWith("about:blank"))
+                    {
+                        //_window.ThemeManager.Toast(new Translator("WebBrowser").Translate("Access denied"));
+                        return;
+                    }
+                    WebViewContainerVisibility = Visibility.Visible;
+                    CurrentWebView?.Navigate(url);
+                }
+                else if (url.Contains(".") &&
+                         Uri.IsWellFormedUriString("http://" + url, UriKind.Absolute))
+                {
+                    WebViewContainerVisibility = Visibility.Visible;
+                    CurrentWebView?.Navigate(url);
+                }
+                else
+                {
+                    WebViewContainerVisibility = Visibility.Visible;
+                    CurrentWebView?.Navigate("https://www.google.com/search?q=" + url);
+                }
+
+                Keyboard.ClearFocus();
+            });
+
+            BackCommand = new RelayCommand(args =>
+            {
+                CurrentWebView?.GoBack();
+            },
+            args =>
+            {
+                return CurrentWebView?.CanGoBack == true;
+            });
+            ForwardCommand = new RelayCommand(args =>
+            {
+                CurrentWebView?.GoForward();
+            },
+            args =>
+            {
+                return CurrentWebView?.CanGoForward == true;
+            });
+            SwitchTabSelectorCommand = new RelayCommand((args) =>
+            {
+                ShowTabSelector();
+            });
+            SelectTabCommand = new RelayCommand((args) =>
+            {
+                SwitchToTab(args as IWebView);
+            });
+            AddTabCommand = new RelayCommand((args) =>
+            {
+                CreateTab();
+            });
+        }
+
         private readonly IWebViewManager _webViewManager;
 
         private IWebView _currentWebView;
@@ -36,6 +156,17 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             set
             {
                 _tabs = value;
+                OnPropertyChanged();
+            }
+        }
+
+        Visibility _webViewContainerVisibility = Visibility.Collapsed;
+        public Visibility WebViewContainerVisibility
+        {
+            get => _webViewContainerVisibility;
+            set
+            {
+                _webViewContainerVisibility = value;
                 OnPropertyChanged();
             }
         }
@@ -73,69 +204,9 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             }
         }
 
-        public WebBrowserPageViewModel(IWebViewManager webViewManager)
-        {
-            _webViewManager = webViewManager;
-            NavigateCommand = new RelayCommand((args) =>
-            {
-                if (CurrentWebView == null)
-                {
-                    CreateTab();
-                }
-                var url = args.ToString();
-                if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
-                {
-                    var uri = new Uri(url);
+        public LinkItemProvider ItemProvider { get; }
 
-                    if (uri.Scheme != "https" && uri.Scheme != "http" && uri.Scheme != "javascript" && !uri.ToString().StartsWith("about:blank"))
-                    {
-                        //_window.ThemeManager.Toast(new Translator("WebBrowser").Translate("Access denied"));
-                        return;
-                    }
-                    CurrentWebView?.Navigate(url);
-                }
-                else if (url.Contains(".") &&
-                         Uri.IsWellFormedUriString("http://" + url, UriKind.Absolute))
-                {
-                    CurrentWebView?.Navigate(url);
-                }
-                else
-                {
-                    CurrentWebView?.Navigate("https://www.google.com/search?q=" + url);
-                }
 
-                Keyboard.ClearFocus();
-            });
-
-            BackCommand = new RelayCommand(args =>
-            {
-                CurrentWebView?.GoBack();
-            },
-            args =>
-            {
-                return CurrentWebView?.CanGoBack == true;
-            });
-            ForwardCommand = new RelayCommand(args =>
-            {
-                CurrentWebView?.GoForward();
-            },
-            args =>
-            {
-                return CurrentWebView?.CanGoForward == true;
-            });
-            SwitchTabSelectorCommand = new RelayCommand((args) =>
-            {
-                ShowTabSelector();
-            });
-            SelectTabCommand = new RelayCommand((args) =>
-            {
-                SwitchToTab(args as IWebView);
-            });
-            AddTabCommand = new RelayCommand((args) =>
-            {
-                CreateTab();
-            });
-        }
 
         void CreateTab()
         {
@@ -205,6 +276,7 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             {
                 tab.Dispose();
             }
+            CurrentWebView = null;
 
         }
 
@@ -219,5 +291,11 @@ namespace Panacea.Modules.WebBrowser.ViewModels
         public RelayCommand SelectTabCommand { get; }
 
         public RelayCommand AddTabCommand { get; }
+
+        public ICommand ItemClickCommand { get; }
+
+        public ICommand IsFavoriteCommand { get; }
+
+        public AsyncCommand FavoriteCommand { get; }
     }
 }
