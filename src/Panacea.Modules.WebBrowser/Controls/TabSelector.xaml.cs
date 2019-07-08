@@ -137,6 +137,18 @@ namespace Panacea.Modules.WebBrowser.Controls
 
 
 
+        public ICommand CloseCommand
+        {
+            get { return (ICommand)GetValue(CloseCommandProperty); }
+            set { SetValue(CloseCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CloseCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CloseCommandProperty =
+            DependencyProperty.Register("CloseCommand", typeof(ICommand), typeof(TabSelector), new PropertyMetadata(null));
+
+
+
         public TabSelector()
         {
             InitializeComponent();

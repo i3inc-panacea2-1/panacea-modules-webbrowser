@@ -25,7 +25,7 @@
         <Grid Visibility="{Binding MainUiVisibility}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*" />
-                <RowDefinition Height="8*"/>
+                <RowDefinition Height="8*" />
             </Grid.RowDefinitions>
 
             <Grid Background="#3b5998" TextElement.Foreground="White">
@@ -150,13 +150,14 @@
                 <contentCtrl:LazyLoadingTabControl
                     Title="{multilinguality:Translate 'Internet',
                                                       'WebBrowser'}"
-                    IsSearchable="False"
                     Columns="5"
+                    IsSearchable="False"
                     ItemProvider="{Binding ItemProvider}"
                     MaterialIcon="web"
                     OpenItemCommand="{Binding ItemClickCommand}"
                     Ratio="1"
-                    Color="#3b5998">
+                    Color="#3b5998"
+                    NoItemsText="{multilinguality:Translate 'No links found', 'WebBrowser'}">
                     <contentCtrl:LazyLoadingTabControl.ThumbnailExtraTemplate>
                         <DataTemplate>
                             <Grid Margin="0,5,0,0" VerticalAlignment="Stretch">
@@ -218,6 +219,7 @@
         <controls:TabSelector
             d:IsHidden="true"
             AddTabCommand="{Binding AddTabCommand}"
+            CloseCommand="{Binding CloseTabCommand}"
             SelectTabCommand="{Binding SelectTabCommand}"
             Tabs="{Binding Tabs}"
             Visibility="{Binding TabSelectorVisibility}" />

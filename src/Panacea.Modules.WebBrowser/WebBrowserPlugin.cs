@@ -1,5 +1,6 @@
 ﻿using Panacea.Core;
 using Panacea.Models;
+using Panacea.Modularity.Content;
 using Panacea.Modularity.Favorites;
 using Panacea.Modularity.UiManager;
 using Panacea.Modularity.WebBrowsing;
@@ -9,10 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Windows.Forms.LinkLabel;
 
 namespace Panacea.Modules.WebBrowser
 {
-    public class WebBrowserPlugin : IWebBrowserPlugin, ICallablePlugin, IHasFavoritesPlugin
+    public class WebBrowserPlugin : IWebBrowserPlugin, ICallablePlugin, IHasFavoritesPlugin, IContentPlugin
     {
         private readonly PanaceaServices _core;
         private IWebViewManager _webViewManager;
@@ -84,7 +86,7 @@ namespace Panacea.Modules.WebBrowser
 
         public void OpenUrl(string url)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public Task Shutdown()
@@ -94,7 +96,18 @@ namespace Panacea.Modules.WebBrowser
 
         public Type GetContentType()
         {
-            throw new NotImplementedException();
+            return typeof(Models.Link);
+        }
+
+        public async Task OpenItemAsync(ServerItem item)
+        {
+            var link = item as Models.Link;
+            if (_core.TryGetUiManager(out IUiManager ui) && await GetWebViewManager())
+            {
+                var vm = new WebBrowserPageViewModel(_webViewManager, new LinkItemProvider(_core), this, _core);
+                ui.Navigate(vm);
+                vm.NavigateCommand.Execute(link.DataUrl);
+            }
         }
     }
 }

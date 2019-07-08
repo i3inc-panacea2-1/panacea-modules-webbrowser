@@ -25,6 +25,23 @@ namespace Panacea.Modules.WebBrowser.ViewModels
         {
             _webViewManager = webViewManager;
             ItemProvider = provider;
+            CloseTabCommand = new RelayCommand(args =>
+            {
+                var view = args as IWebView;
+                if (Tabs.Contains(view))
+                {
+                    Tabs.Remove(view);
+                    if (Tabs.Count == 0) CreateTab();
+                    else if(CurrentWebView == view)
+                    {
+                        CurrentWebView = Tabs.First();
+                        
+                    }
+                    //SwitchToTab(CurrentWebView);
+
+                }
+               
+            });
             ItemClickCommand = new RelayCommand(args =>
             {
                 var link = args as Link;
@@ -58,21 +75,24 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             });
             NavigateCommand = new RelayCommand(async (args) =>
             {
+                var url = args.ToString();
                 if (CurrentWebView == null)
                 {
-                    CreateTab();
+                    CreateTab(url);
                 }
-                var url = args.ToString();
+               
                 if (url.ToLower() == "about:blank")
                 {
-                    WebViewContainerVisibility = Visibility.Collapsed;
                     CurrentWebView?.Navigate(url);
                     return;
                 }
                 if (core.TryGetBilling(out IBillingManager bill))
                 {
-                    var service = await bill.GetOrRequestServiceAsync(new Translator("WebBrowser").Translate("Web browser requires service."), "WebBrowser");
-                    if (service == null) return;
+                    if (!bill.IsPluginFree("WebBrowser"))
+                    {
+                        var service = await bill.GetOrRequestServiceAsync(new Translator("WebBrowser").Translate("Web browser requires service."), "WebBrowser");
+                        if (service == null) return;
+                    }
 
                 }
                 if (CurrentWebView == null)
@@ -208,9 +228,9 @@ namespace Panacea.Modules.WebBrowser.ViewModels
 
 
 
-        void CreateTab()
+        void CreateTab(string url = "about:blank")
         {
-            var view = _webViewManager.CreateTab();
+            var view = _webViewManager.CreateTab(url);
             Tabs.Add(view);
             SwitchToTab(view);
 
@@ -218,9 +238,11 @@ namespace Panacea.Modules.WebBrowser.ViewModels
 
         void SwitchToTab(IWebView webView)
         {
+            if (CurrentWebView != null) DetachFromWebView(CurrentWebView);
             AttachToWebView(webView);
             CurrentWebView = webView;
             ShowMainUi();
+            if (CurrentWebView.Url?.ToLower() != "about:blank") WebViewContainerVisibility = Visibility.Visible;
         }
 
         void ShowMainUi()
@@ -240,6 +262,24 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             webview.HasInvalidCertificateChanged += Webview_HasInvalidCertificateChanged;
             webview.CanGoBackChanged += Webview_CanGoBackChanged;
             webview.CanGoForwardChanged += Webview_CanGoForwardChanged;
+            webview.Navigated += Webview_Navigated;
+        }
+
+        void DetachFromWebView(IWebView webview)
+        {
+            webview.HasInvalidCertificateChanged -= Webview_HasInvalidCertificateChanged;
+            webview.CanGoBackChanged -= Webview_CanGoBackChanged;
+            webview.CanGoForwardChanged -= Webview_CanGoForwardChanged;
+            webview.Navigated -= Webview_Navigated;
+        }
+
+        private void Webview_Navigated(object sender, string e)
+        {
+            if (TabSelectorVisibility == Visibility.Visible) return;
+            if (e.ToLower() == "about:blank")
+            {
+                WebViewContainerVisibility = Visibility.Collapsed;
+            }
         }
 
         private void Webview_CanGoForwardChanged(object sender, bool e)
@@ -297,5 +337,7 @@ namespace Panacea.Modules.WebBrowser.ViewModels
         public ICommand IsFavoriteCommand { get; }
 
         public AsyncCommand FavoriteCommand { get; }
+
+        public ICommand CloseTabCommand { get; }
     }
 }
