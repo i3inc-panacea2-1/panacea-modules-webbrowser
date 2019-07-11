@@ -17,12 +17,17 @@ namespace Panacea.Modules.WebBrowser.ViewModels
         public UnmanagedTabViewModel(IWebView tab)
         {
             WebView = tab;
-
+            WebView.CanGoBackChanged += WebView_CanGoBackChanged;
             BackCommand = new RelayCommand(arg =>
             {
                 if (WebView?.CanGoBack == true) WebView?.GoBack();
             },
             arg => WebView?.CanGoBack == true);
+        }
+
+        private void WebView_CanGoBackChanged(object sender, bool e)
+        {
+            BackCommand?.RaiseCanExecuteChanged();
         }
 
         public override void Deactivate()
