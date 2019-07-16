@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Panacea.Modules.WebBrowser.ViewModels
 {
@@ -32,15 +33,15 @@ namespace Panacea.Modules.WebBrowser.ViewModels
                 {
                     Tabs.Remove(view);
                     if (Tabs.Count == 0) CreateTab();
-                    else if(CurrentWebView == view)
+                    else if (CurrentWebView == view)
                     {
                         CurrentWebView = Tabs.First();
-                        
+
                     }
                     //SwitchToTab(CurrentWebView);
 
                 }
-               
+
             });
             ItemClickCommand = new RelayCommand(args =>
             {
@@ -80,7 +81,7 @@ namespace Panacea.Modules.WebBrowser.ViewModels
                 {
                     CreateTab(url);
                 }
-               
+
                 if (url.ToLower() == "about:blank")
                 {
                     CurrentWebView?.Navigate(url);
@@ -243,6 +244,7 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             CurrentWebView = webView;
             ShowMainUi();
             if (CurrentWebView.Url?.ToLower() != "about:blank") WebViewContainerVisibility = Visibility.Visible;
+            else WebViewContainerVisibility = Visibility.Collapsed;
         }
 
         void ShowMainUi()
@@ -263,6 +265,51 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             webview.CanGoBackChanged += Webview_CanGoBackChanged;
             webview.CanGoForwardChanged += Webview_CanGoForwardChanged;
             webview.Navigated += Webview_Navigated;
+            webview.FullscreenChanged += Webview_FullscreenChanged;
+        }
+
+        private void Webview_FullscreenChanged(object sender, bool e)
+        {
+            if (e)
+            {
+                if (sender == CurrentWebView)
+                {
+                   
+                    var w = new Window()
+                    {
+                        ShowInTaskbar = false,
+                        WindowStyle = WindowStyle.None,
+                        Background = Brushes.Black,
+                        ResizeMode = ResizeMode.NoResize,
+                        WindowState = WindowState.Maximized,
+                        Content = CurrentWebView,
+                        Topmost = true
+                    };
+                    CurrentWebView = null;
+                    w.Closed += W_Closed;
+                    w.Show();
+                }
+            }
+            else
+            {
+                var w = Window.GetWindow(sender as FrameworkElement);
+                if (w != null)
+                {
+                    w.Close();
+                }
+            }
+        }
+
+     
+        private void W_Closed(object sender, EventArgs e)
+        {
+            var w = sender as Window;
+            var c = w.Content;
+            w.Content = null;
+            if(CurrentWebView == null)
+            {
+                CurrentWebView = c as IWebView;
+            }
         }
 
         void DetachFromWebView(IWebView webview)
@@ -271,6 +318,7 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             webview.CanGoBackChanged -= Webview_CanGoBackChanged;
             webview.CanGoForwardChanged -= Webview_CanGoForwardChanged;
             webview.Navigated -= Webview_Navigated;
+            webview.FullscreenChanged -= Webview_FullscreenChanged;
         }
 
         private void Webview_Navigated(object sender, string e)
