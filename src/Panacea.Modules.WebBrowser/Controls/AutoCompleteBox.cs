@@ -239,9 +239,15 @@ namespace Panacea.Modules.WebBrowser.Controls
 
 
                         paragraph.Inlines.Add(domain);
-
-                        var path = new TextBlock() { Text = WebUtility.UrlDecode(uri.PathAndQuery), Foreground = Brushes.Silver, Background = Brushes.Transparent };
-                        paragraph.Inlines.Add(path);
+                        var text3 = WebUtility.UrlDecode(uri.PathAndQuery);
+                        TextBlock path = null;
+                        if (text3.Length > 1 )
+                        {
+                            path = new TextBlock() { Text = text3, Foreground = new SolidColorBrush(Color.FromRgb(120, 120, 120)), Background = Brushes.Transparent };
+                            paragraph.Inlines.Add(path);
+                        }
+                       
+                        
 
                         path = new TextBlock() { Text = WebUtility.UrlDecode(uri.Fragment), Foreground = Brushes.Silver, Background = Brushes.Transparent };
                         paragraph.Inlines.Add(path);

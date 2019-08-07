@@ -2,6 +2,7 @@
 using Panacea.Core;
 using Panacea.Modularity.Billing;
 using Panacea.Modularity.Favorites;
+using Panacea.Modularity.Keyboard;
 using Panacea.Modularity.WebBrowsing;
 using Panacea.Modules.WebBrowser.Models;
 using Panacea.Modules.WebBrowser.Views;
@@ -26,6 +27,7 @@ namespace Panacea.Modules.WebBrowser.ViewModels
         {
             _webViewManager = webViewManager;
             ItemProvider = provider;
+            _core = core;
             CloseTabCommand = new RelayCommand(args =>
             {
                 var view = args as IWebView;
@@ -76,6 +78,10 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             });
             NavigateCommand = new RelayCommand(async (args) =>
             {
+                if (_core.TryGetKeyboard(out IKeyboardPlugin keyboard))
+                {
+                    keyboard.HideKeyboard();
+                }
                 var url = args.ToString();
                 if (CurrentWebView == null)
                 {
@@ -227,7 +233,7 @@ namespace Panacea.Modules.WebBrowser.ViewModels
 
         public LinkItemProvider ItemProvider { get; }
 
-
+        private readonly PanaceaServices _core;
 
         void CreateTab(string url = "about:blank")
         {
@@ -266,6 +272,35 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             webview.CanGoForwardChanged += Webview_CanGoForwardChanged;
             webview.Navigated += Webview_Navigated;
             webview.FullscreenChanged += Webview_FullscreenChanged;
+            webview.ElementFocus += Webview_ElementFocus;
+            webview.ElementLostFocus += Webview_ElementLostFocus;
+        }
+
+        void DetachFromWebView(IWebView webview)
+        {
+            webview.HasInvalidCertificateChanged -= Webview_HasInvalidCertificateChanged;
+            webview.CanGoBackChanged -= Webview_CanGoBackChanged;
+            webview.CanGoForwardChanged -= Webview_CanGoForwardChanged;
+            webview.Navigated -= Webview_Navigated;
+            webview.FullscreenChanged -= Webview_FullscreenChanged;
+            webview.ElementFocus -= Webview_ElementFocus;
+            webview.ElementLostFocus -= Webview_ElementLostFocus;
+        }
+
+        private void Webview_ElementLostFocus(object sender, EventArgs e)
+        {
+            if (_core.TryGetKeyboard(out IKeyboardPlugin keyboard))
+            {
+                keyboard.HideKeyboard();
+            }
+        }
+
+        private void Webview_ElementFocus(object sender, string e)
+        {
+            if (_core.TryGetKeyboard(out IKeyboardPlugin keyboard))
+            {
+                keyboard.ShowKeyboard(KeyboardType.Normal);
+            }
         }
 
         private void Webview_FullscreenChanged(object sender, bool e)
@@ -274,7 +309,7 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             {
                 if (sender == CurrentWebView)
                 {
-                   
+
                     var w = new Window()
                     {
                         ShowInTaskbar = false,
@@ -300,26 +335,19 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             }
         }
 
-     
+
         private void W_Closed(object sender, EventArgs e)
         {
             var w = sender as Window;
             var c = w.Content;
             w.Content = null;
-            if(CurrentWebView == null)
+            if (CurrentWebView == null)
             {
                 CurrentWebView = c as IWebView;
             }
         }
 
-        void DetachFromWebView(IWebView webview)
-        {
-            webview.HasInvalidCertificateChanged -= Webview_HasInvalidCertificateChanged;
-            webview.CanGoBackChanged -= Webview_CanGoBackChanged;
-            webview.CanGoForwardChanged -= Webview_CanGoForwardChanged;
-            webview.Navigated -= Webview_Navigated;
-            webview.FullscreenChanged -= Webview_FullscreenChanged;
-        }
+       
 
         private void Webview_Navigated(object sender, string e)
         {
