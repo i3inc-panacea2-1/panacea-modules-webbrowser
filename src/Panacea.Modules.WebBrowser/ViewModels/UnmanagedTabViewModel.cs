@@ -1,4 +1,6 @@
 ﻿using Panacea.Controls;
+using Panacea.Core;
+using Panacea.Modularity.UiManager;
 using Panacea.Modularity.WebBrowsing;
 using Panacea.Modules.WebBrowser.Views;
 using Panacea.Mvvm;
@@ -16,6 +18,8 @@ namespace Panacea.Modules.WebBrowser.ViewModels
     class UnmanagedTabViewModel : ViewModelBase
     {
         IWebView _webView;
+        private readonly PanaceaServices _core;
+
         public IWebView WebView
         {
             get => _webView;
@@ -26,16 +30,29 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             }
         }
 
-        public UnmanagedTabViewModel(IWebView tab)
+        public UnmanagedTabViewModel(IWebView tab, PanaceaServices core)
         {
+            _core = core;
             WebView = tab;
             WebView.CanGoBackChanged += WebView_CanGoBackChanged;
             WebView.FullscreenChanged += WebView_FullscreenChanged;
+            WebView.Close += WebView_Close;
             BackCommand = new RelayCommand(arg =>
             {
                 if (WebView?.CanGoBack == true) WebView?.GoBack();
             },
             arg => WebView?.CanGoBack == true);
+        }
+
+        private void WebView_Close(object sender, EventArgs e)
+        {
+            if (_core.TryGetUiManager(out IUiManager ui))
+            {
+                if (ui.CurrentPage == this)
+                {
+                    ui.GoBack();
+                }
+            }
         }
 
         private void WebView_FullscreenChanged(object sender, bool e)
