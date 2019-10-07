@@ -1,5 +1,6 @@
 ﻿using Panacea.Controls;
 using Panacea.Core;
+using Panacea.Modularity.Keyboard;
 using Panacea.Modularity.UiManager;
 using Panacea.Modularity.WebBrowsing;
 using Panacea.Modules.WebBrowser.Views;
@@ -36,12 +37,30 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             WebView = tab;
             WebView.CanGoBackChanged += WebView_CanGoBackChanged;
             WebView.FullscreenChanged += WebView_FullscreenChanged;
+            WebView.ElementFocus += WebView_ElementFocus;
+            WebView.ElementLostFocus += WebView_ElementLostFocus;
             WebView.Close += WebView_Close;
             BackCommand = new RelayCommand(arg =>
             {
                 if (WebView?.CanGoBack == true) WebView?.GoBack();
             },
             arg => WebView?.CanGoBack == true);
+        }
+
+        private void WebView_ElementLostFocus(object sender, EventArgs e)
+        {
+            if (_core.TryGetKeyboard(out IKeyboardPlugin keyboard))
+            {
+                keyboard.HideKeyboard();
+            }
+        }
+
+        private void WebView_ElementFocus(object sender, string e)
+        {
+            if (_core.TryGetKeyboard(out IKeyboardPlugin keyboard))
+            {
+                keyboard.ShowKeyboard(KeyboardType.Normal);
+            }
         }
 
         private void WebView_Close(object sender, EventArgs e)
