@@ -67,7 +67,7 @@ namespace Panacea.Modules.WebBrowser
             if (_core.TryGetUiManager(out IUiManager ui))
             {
                 var tab = manager.CreateTab(url);
-                var vm = new UnmanagedTabViewModel(tab, _core);
+                var vm = new UnmanagedTabViewModel(tab, _core, blockDomains, allowedDomains);
                 ui.Navigate(vm, false);
             }
         }
@@ -78,7 +78,7 @@ namespace Panacea.Modules.WebBrowser
             {
                 var tab = _webViewManager.CreateTab(url);
 
-                var vm = new UnmanagedTabViewModel(tab, _core);
+                var vm = new UnmanagedTabViewModel(tab, _core, blockDomains, allowedDomains);
 
                 ui.Navigate(vm, false);
             }

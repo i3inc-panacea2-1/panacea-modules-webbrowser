@@ -20,6 +20,8 @@ namespace Panacea.Modules.WebBrowser.ViewModels
     {
         IWebView _webView;
         private readonly PanaceaServices _core;
+        private readonly bool _blockDomains;
+        private readonly List<string> _whiteList;
 
         public IWebView WebView
         {
@@ -31,10 +33,13 @@ namespace Panacea.Modules.WebBrowser.ViewModels
             }
         }
 
-        public UnmanagedTabViewModel(IWebView tab, PanaceaServices core)
+        public UnmanagedTabViewModel(IWebView tab, PanaceaServices core, bool blockDomains, List<string> whiteList)
         {
             _core = core;
+            _blockDomains = blockDomains;
+            _whiteList = whiteList;
             WebView = tab;
+            WebView.Navigating += WebView_Navigating;
             WebView.CanGoBackChanged += WebView_CanGoBackChanged;
             WebView.FullscreenChanged += WebView_FullscreenChanged;
             WebView.ElementFocus += WebView_ElementFocus;
@@ -45,6 +50,18 @@ namespace Panacea.Modules.WebBrowser.ViewModels
                 if (WebView?.CanGoBack == true) WebView?.GoBack();
             },
             arg => WebView?.CanGoBack == true);
+        }
+
+        private void WebView_Navigating(object sender, NavigatingEventArgs e)
+        {
+            if (_blockDomains)
+            {
+                if(!_whiteList.Any(w=> new Uri(e.Url).Host.ToLower().Contains(w.ToLower())))
+                {
+                    e.Cancel = true;
+                    _core.Logger.Warn(this, "Blocked url: " + e.Url);
+                }
+            }
         }
 
         private void WebView_ElementLostFocus(object sender, EventArgs e)
