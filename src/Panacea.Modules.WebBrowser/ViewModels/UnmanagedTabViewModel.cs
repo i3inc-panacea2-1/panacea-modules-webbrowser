@@ -56,7 +56,7 @@ namespace Panacea.Modules.WebBrowser.ViewModels
         {
             if (_blockDomains)
             {
-                if(!_whiteList.Any(w=> new Uri(e.Url).Host.ToLower().Contains(w.ToLower())))
+                if(_whiteList!= null && !_whiteList.Any(w=> new Uri(e.Url).Host.ToLower().Contains(w.ToLower())))
                 {
                     e.Cancel = true;
                     _core.Logger.Warn(this, "Blocked url: " + e.Url);
