@@ -3,6 +3,7 @@ using Panacea.Core;
 using Panacea.Modularity.Billing;
 using Panacea.Modularity.Favorites;
 using Panacea.Modularity.Keyboard;
+using Panacea.Modularity.UiManager;
 using Panacea.Modularity.WebBrowsing;
 using Panacea.Modules.WebBrowser.Models;
 using Panacea.Modules.WebBrowser.Views;
@@ -99,6 +100,13 @@ namespace Panacea.Modules.WebBrowser.ViewModels
                     {
                         var service = await bill.GetOrRequestServiceAsync(new Translator("WebBrowser").Translate("Web browser requires service."), "WebBrowser");
                         if (service == null) return;
+                        if(_core.TryGetUiManager(out IUiManager ui))
+                        {
+                            if(ui.CurrentPage != this)
+                            {
+                                ui.Navigate(this);
+                            }
+                        }
                     }
 
                 }
@@ -375,17 +383,34 @@ namespace Panacea.Modules.WebBrowser.ViewModels
                 HasInvalidCertificate = e;
             }
         }
-
-        public override void Activate()
+        IServiceMonitor _serviceMonitor;
+        public override async void Activate()
         {
             if (CurrentWebView == null)
             {
                 CreateTab();
             }
+            if(_core.TryGetBilling(out IBillingManager bill)
+                && !bill.IsPluginFree("WebBrowser"))
+            {
+                var serv = await bill.GetServiceAsync("WebBrowser");
+                if (serv != null)
+                {
+                    _serviceMonitor = bill.CreateServiceMonitor();
+                    _serviceMonitor.Monitor(serv);
+                }
+            }
+               
         }
 
         public override void Deactivate()
         {
+            if(_serviceMonitor != null)
+            {
+                _serviceMonitor.StopMonitor();
+                _serviceMonitor.Dispose();
+                _serviceMonitor = null;
+            }
             var tabs = Tabs.ToList();
             Tabs.Clear();
             foreach (var tab in tabs)
